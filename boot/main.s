@@ -61,11 +61,10 @@ init:   mov     eax, 0x10 ; initializing
         mov     es, eax   ;   with
         mov     fs, eax   ;   GDT
         mov     gs, eax   ;   entries
-.setcs: dw      0xEA66    ; setting cs to
-        dd      .jump     ;   point to code
-        dw      0x8       ;   descriptor at 0x8
-.jump:  jmp     BUF_BASE_LINEAR
-.hlt:   hlt
+.setcs: dw      0xEA66          ; setting cs to point to
+        dd      BUF_BASE_LINEAR ;   code descriptor at 0x8 and
+        dw      0x8             ;   jumping to loaded executable code
+.hlt:   hlt ; just in case
 
 gdt_ptr dw  0 ; uninitialized GDT
         dd  0 ;   pointer structure
