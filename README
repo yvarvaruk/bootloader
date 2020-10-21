@@ -1,0 +1,22 @@
+This is a simple x86 real-mode bootloader intended to:
+1. Fit into 512 bytes bootsector (maybe i'll reduce its size to 440 bytes in future).
+2. Boot from any kind of storage supported by BIOS.
+3. Enable A20 line.
+4. Set up GDT.
+5. Switch to protected mode.
+6. Load flat binary 32-bit executable.
+
+If you run "make", you will get 3 files:
+boot.bin - bootloader
+hello.bin - loaded binary
+disk.img - disk image that you can write to your drive using dd utility.
+
+Loaded executable is simple protected mode "Hello, World!" executable. 
+You can specify your own file to boot by running "make loaded_binary=filename".
+Your binary executable's base address must be 0x7E00. Maybe i'll add possibility
+to specify base address with Makefile argument in future as well.
+
+Only flat binary format is supported.
+
+Also if you have QEMU (qemu-system-i386) installed, you can run the
+executable in virtual machine with "make qemu" or "make loaded_binary=filename qemu"
