@@ -33,3 +33,7 @@ qemu: $(disk_image)
 	qemu-system-i386 -drive format=raw,file=$< &
 qemu_debug: $(disk_image)
 	qemu-system-i386 -drive format=raw,file=$< -s -S & gdb --quiet
+
+.PHONY: clean
+clean:
+	rm $(bootldr_binary) $(hello_binary) $(disk_image)
