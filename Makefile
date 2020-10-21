@@ -11,22 +11,24 @@ hello_main = hello/main.s
 hello_srcs = $(wildcard hello/*.s)
 hello_binary = hello.bin
 
+loaded_binary ?= $(hello_binary)
+
 # Get file size in 512 byte blocks
 # $(1) - filename
 blocksize = $$((($(shell stat --printf='%s' $(1)) - 1) / 512 + 1))
 
 all: $(disk_image)
 
-$(disk_image): $(bootldr_binary) $(hello_binary)
-	dd if=/dev/zero of=$(disk_image) bs=512 count=$$(($(call blocksize,$(hello_binary)) + 1))
-	dd if=$(bootldr_binary) of=$(disk_image) count=1 conv=notrunc
-	dd if=$(hello_binary) of=$(disk_image) count=$(call blocksize,$(hello_binary)) seek=1 conv=notrunc
+$(disk_image): $(bootldr_binary) $(loaded_binary)
+	dd if=/dev/zero of=$@ bs=512 count=$$(($(call blocksize,$(loaded_binary)) + 1))
+	dd if=$(bootldr_binary) of=$@ count=1 conv=notrunc
+	dd if=$(loaded_binary) of=$@ count=$(call blocksize,$(loaded_binary)) seek=1 conv=notrunc
 
 $(hello_binary): $(hello_srcs)
-	$(AS) $(ASFLAGS) -o $@ $(hello_main)
+	$(AS) $(ASFLAGS) -Ihello -o $@ $(hello_main)
 
-$(bootldr_binary): $(hello_binary) $(bootldr_srcs)
-	$(AS) $(ASFLAGS) -Iboot -DEXECUTABLE_SIZE=$(call blocksize,$(hello_binary)) -o $@ $(bootldr_main)
+$(bootldr_binary): $(loaded_binary) $(bootldr_srcs)
+	$(AS) $(ASFLAGS) -Iboot -DEXECUTABLE_SIZE=$(call blocksize,$(loaded_binary)) -o $@ $(bootldr_main)
 
 .PHONY: qemu qemu_debug
 qemu: $(disk_image)
