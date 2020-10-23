@@ -41,7 +41,7 @@ boot:   cli
         add     di, 8
         GDESCR  0x0,0xFFFFF,0x92,0xC ; data descriptor
         mov     si, gdt_ptr            ; initialize GDT pointer structure:
-        mov     [si], WORD 24          ;   GDT size
+        mov     [si], WORD 23          ;   GDT size
         mov     [si+2], DWORD GDT_BASE ;   linear address of GDT
         lgdt    [si]
 
